@@ -1,15 +1,25 @@
 'use client'
 
 import { useState, useEffect } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import ItemCard from '@/components/items/ItemCard';
 import ItemModal from '@/components/items/ItemModal';
-import { getStoredLists, addItemToList, updateListItem, deleteListItem } from '@/lib/utils/localStorage';
+import ListNameModal from '@/components/lists/ListNameModal';
+import { 
+  getStoredLists, 
+  addItemToList, 
+  updateListItem, 
+  deleteListItem, 
+  deleteStoredList,
+  updateStoredList 
+} from '@/lib/utils/localStorage';
 
 export default function ListDetail() {
   const params = useParams();
+  const router = useRouter();
   const [list, setList] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isNameModalOpen, setIsNameModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [selectedCategory, setSelectedCategory] = useState('all');
 
@@ -45,6 +55,18 @@ export default function ListDetail() {
     }
   };
 
+  const handleDeleteList = () => {
+    if (window.confirm('Are you sure you want to delete this list?')) {
+      deleteStoredList(params.id);
+      router.push('/lists');
+    }
+  };
+
+  const handleUpdateName = (updatedList) => {
+    updateStoredList(updatedList);
+    loadList();
+  };
+
   const filteredItems = list?.items?.filter(item => 
     selectedCategory === 'all' || item.category === selectedCategory
   ) || [];
@@ -54,16 +76,32 @@ export default function ListDetail() {
   return (
     <div>
       <div className="flex justify-between items-center mb-8">
-        <h1 className="text-2xl font-bold">{list.name}</h1>
-        <button 
-          className="btn btn-primary"
-          onClick={() => {
-            setEditingItem(null);
-            setIsModalOpen(true);
-          }}
-        >
-          Add Item
-        </button>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-bold">{list.name}</h1>
+          <button 
+            className="btn btn-ghost btn-sm"
+            onClick={() => setIsNameModalOpen(true)}
+          >
+            ...
+          </button>
+        </div>
+        <div className="flex gap-2">
+          <button 
+            className="btn btn-error btn-outline"
+            onClick={handleDeleteList}
+          >
+            Delete List
+          </button>
+          <button 
+            className="btn btn-primary"
+            onClick={() => {
+              setEditingItem(null);
+              setIsModalOpen(true);
+            }}
+          >
+            Add Item
+          </button>
+        </div>
       </div>
 
       <div className="mb-4">
@@ -106,6 +144,13 @@ export default function ListDetail() {
           setEditingItem(null);
         }}
         onSave={handleSaveItem}
+      />
+
+      <ListNameModal 
+        isOpen={isNameModalOpen}
+        list={list}
+        onClose={() => setIsNameModalOpen(false)}
+        onSave={handleUpdateName}
       />
     </div>
   );
