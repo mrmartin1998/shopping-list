@@ -1,5 +1,6 @@
 // Local Storage Keys
 const LISTS_KEY = 'shopping_lists';
+const CATEGORIES_KEY = 'shopping_categories';
 
 // Get all lists from localStorage
 export const getStoredLists = () => {
@@ -79,11 +80,7 @@ export const updateStoredList = (updatedList) => {
   const lists = getStoredLists();
   const index = lists.findIndex(l => l.id === updatedList.id);
   if (index !== -1) {
-    lists[index] = {
-      ...lists[index],
-      ...updatedList,
-      items: updatedList.items || lists[index].items
-    };
+    lists[index] = updatedList;
     saveStoredLists(lists);
   }
 };
@@ -93,4 +90,28 @@ export const deleteStoredList = (listId) => {
   const lists = getStoredLists();
   const filteredLists = lists.filter(l => l.id !== listId);
   saveStoredLists(filteredLists);
+};
+
+// Get categories from localStorage
+export const getStoredCategories = () => {
+  if (typeof window === 'undefined') return [];
+  
+  try {
+    const categories = localStorage.getItem(CATEGORIES_KEY);
+    return categories ? JSON.parse(categories) : [];
+  } catch (error) {
+    console.error('Error reading categories from localStorage:', error);
+    return [];
+  }
+};
+
+// Save categories to localStorage
+export const saveStoredCategories = (categories) => {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+  } catch (error) {
+    console.error('Error saving categories to localStorage:', error);
+  }
 };

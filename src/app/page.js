@@ -37,17 +37,17 @@ export default function Home() {
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div className="stat bg-base-200 rounded-box">
+        <div className="stat bg-base-200 rounded-box text-center">
           <div className="stat-title">Total Lists</div>
           <div className="stat-value">{lists?.length || 0}</div>
         </div>
-        <div className="stat bg-base-200 rounded-box">
+        <div className="stat bg-base-200 rounded-box text-center">
           <div className="stat-title">Active Items</div>
           <div className="stat-value">
             {lists?.reduce((acc, list) => acc + (list.items?.filter(item => !item.completed).length || 0), 0) || 0}
           </div>
         </div>
-        <div className="stat bg-base-200 rounded-box">
+        <div className="stat bg-base-200 rounded-box text-center">
           <div className="stat-title">Completed Items</div>
           <div className="stat-value">
             {lists?.reduce((acc, list) => acc + (list.items?.filter(item => item.completed).length || 0), 0) || 0}
