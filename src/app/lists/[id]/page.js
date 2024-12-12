@@ -67,9 +67,17 @@ export default function ListDetail() {
     loadList();
   };
 
-  const filteredItems = list?.items?.filter(item => 
-    selectedCategory === 'all' || item.category === selectedCategory
-  ) || [];
+  const filteredItems = list?.items
+    ?.filter(item => selectedCategory === 'all' || item.category === selectedCategory)
+    .sort((a, b) => {
+      // First sort by completion status
+      if (a.completed === b.completed) {
+        // If completion status is the same, maintain original order
+        return 0;
+      }
+      // Move completed items to the bottom
+      return a.completed ? 1 : -1;
+    }) || [];
 
   if (!list) return <div>Loading...</div>;
 
